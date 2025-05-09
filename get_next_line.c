@@ -6,11 +6,13 @@
 /*   By: leberton <leberton@42vienna.com>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/09 17:32:04 by leberton          #+#    #+#             */
-/*   Updated: 2025/05/09 19:03:31 by leberton         ###   ########.fr       */
+/*   Updated: 2025/05/09 19:46:10 by leberton         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <unistd.h>
+#include <fcntl.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -84,4 +86,28 @@ char	*get_next_line(int fd)
 	free(temp);
 	temp = rest;
 	return (line);
+}
+
+int main(int argc, char **argv)
+{
+	if (argc != 2)
+	{
+		printf("Error: ARGC != 2 -> no more than one argument allowed.");
+		return (1);
+	}
+	if (argc == 2 && strncmp(argv[1], "files/file", 10) != 0)
+	{
+		printf("Error: PATH is not correct.");
+		return (1);
+	}
+	char *line;
+	int fd;
+	fd = open(argv[1], O_RDONLY);
+	while ((line = get_next_line(fd)) != NULL)
+	{
+		printf("%s", line);
+		free(line);
+	}
+	close(fd);
+	return (0);
 }
