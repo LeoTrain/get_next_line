@@ -1,12 +1,13 @@
 CC = cc
 FLAGS = -Wall -Wextra -Werror
 STATIC = -D BUFFER_SIZE=$(BUFFER_SIZE)
-SRCS = get_next_line.c
+SRCS = main.c get_next_line.c get_next_line_utils.c get_next_line.h
 FILE_PATH = files/
 NAME = prog
 BUFFER_SIZE ?= 100
-FILE ?= file1.txt
-FULL_PATH = $(FILE_PATH)$(FILE)
+FILE ?= file1
+ENDING ?= .txt
+FULL_PATH = $(FILE_PATH)$(FILE)$(ENDING)
 
 all: $(NAME)
 
