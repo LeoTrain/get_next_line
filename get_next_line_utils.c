@@ -6,7 +6,7 @@
 /*   By: leberton <leberton@42vienna.com>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/11 00:37:10 by leberton          #+#    #+#             */
-/*   Updated: 2025/05/11 00:37:12 by leberton         ###   ########.fr       */
+/*   Updated: 2025/05/11 16:01:38 by leberton         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,24 +24,27 @@ size_t	str_len(const char *s)
 
 char	*joinfree(char *temp, const char *buff)
 {
-	size_t	temp_len;
+	size_t			temp_len;
+	size_t			buff_len;
 	char	*str;
 
 	temp_len = str_len(temp);
-	str  = (char *)malloc(temp_len + str_len(buff) + 1 * sizeof(char)); 
+	buff_len = str_len(buff);
+	str  = (char *)malloc((temp_len + str_len(buff) + 1) * sizeof(char)); 
 	if (!str)
 		return NULL;
 	if (temp)
-		strcpy(str, temp);
+		memcpy(str, temp, temp_len);
 	if (buff)
-		strcpy(str + temp_len, buff);
+		memcpy(str + temp_len, buff, buff_len);
+	str[temp_len + buff_len] = '\0';
 	free(temp);
 	return (str);
 }
 
-int	find_newline(const char *s)
+ssize_t	find_newline(const char *s)
 {
-	int	i;
+	size_t	i;
 
 	i = 0;
 	while (s && s[i])

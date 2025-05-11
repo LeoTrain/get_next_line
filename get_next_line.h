@@ -6,7 +6,7 @@
 /*   By: leberton <leberton@42vienna.com>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/11 00:37:16 by leberton          #+#    #+#             */
-/*   Updated: 2025/05/11 00:37:17 by leberton         ###   ########.fr       */
+/*   Updated: 2025/05/11 16:01:48 by leberton         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@
 char	*get_next_line(int fd);
 
 char	*joinfree(char *temp, const char *buff);
-size_t	str_len(const char *s);
-int		find_newline(const char *s);
+size_t			str_len(const char *s);
+ssize_t			find_newline(const char *s);
 
 #endif

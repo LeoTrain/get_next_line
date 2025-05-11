@@ -21,6 +21,8 @@ fclean: clean
 
 re: fclean all
 
+t: re test
+
 test: $(NAME)
 	./$(NAME) $(FULL_PATH)
 
