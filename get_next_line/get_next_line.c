@@ -11,91 +11,101 @@
 /* ************************************************************************** */
 
 #include "get_next_line.h"
+#include <stdio.h>
 
-ssize_t	is_newline_in_str(char *str)
+char	*free_buffer(char *buffer, char *read_content)
 {
-	ssize_t	i;
+	char	*temp;
 
-	i = 0;
-	while (str[i])
-	{
-		if (str[i] == '\n')
-			return (i);
-		i++;
-	}
-	return (-1);
+	temp = ft_strjoin(buffer, read_content);
+	free(buffer);
+	return (temp);
 }
 
-char	*concat(char *src2,const char *src)
+char	*prepare_for_next(char *buffer)
 {
-	char	*str;
 	size_t	i;
 	size_t	j;
+	char	*new_buffer;
 
 	i = 0;
 	j = 0;
-	if (!src2)
-		src2 = (char *)calloc(1, sizeof(char));
-	str = (char *)calloc(strlen(src) + strlen(src2) + 1, sizeof(char));
-	if (!str)
-		return (NULL);
-	while (src[i])
+	while (buffer[i] && buffer[i] != '\n')
+		i++;
+	if (!buffer[i])
 	{
-		str[i] = src[i];
+		free(buffer);
+		return (NULL);
+	}
+	new_buffer = (char *)ft_calloc((strlen(buffer) - i + 1), sizeof(char));
+	if (!new_buffer)
+		return (NULL);
+	i++;
+	while (buffer[i])
+		new_buffer[j++] = buffer[i++];
+	free(buffer);
+	return (new_buffer);
+}
+
+char	*get_line_from_buffer(char *buffer)
+{
+	size_t	i;
+	char	*line;
+
+	i = 0;
+	while (buffer[i] && buffer[i] != '\n')
+		i++;
+	line = (char *)ft_calloc(i + 2, sizeof(char));
+	if (!line)
+		return (NULL);
+	i = 0;
+	while (buffer[i] && buffer[i] != '\n')
+	{
+		line[i] = buffer[i];
 		i++;
 	}
-	while (src2[j])
-	{
-		str[i + j] = src2[j];
-		j++;
-	}
-	free(src2);
-	return (str);
+	if (buffer[i] && buffer[i] == '\n')
+		line[i] = '\n';
+	i++;
+	return (line);
 }
 
-char	*get_line_from_temp(char *temp)
+char	*rdff(int fd, char *buffer)
 {
-	char	*str;
+	ssize_t		read_size;
+	char	*read_content;
 
-	str = (char *)calloc(strlen(temp) + 1, sizeof(char));
-	if (!str)
-		return (NULL);
-	while (*temp && *temp != '\n')
-		*str++ = *temp++;
-	return (str);
-}
-
-void	store_temp_in_buffer(char *temp, char *buffer)
-{
-	buffer = (char *)calloc(strlen(temp) + 1, sizeof(char));
 	if (!buffer)
-		return ;
-	while (*temp)
-		*buffer++ = *temp++;
+		buffer = (char *)ft_calloc(1, 1);
+	read_size = 1;
+	read_content = (char *)ft_calloc(BUFFER_SIZE + 1, sizeof(char));
+	if (!read_content)
+		return (NULL);
+	while (read_size > 0)
+	{
+		read_size = read(fd, read_content, BUFFER_SIZE);
+		if (read_size == 0)
+		{
+			free(read_content);
+			return (NULL);
+		}
+		buffer = free_buffer(buffer, read_content);
+		if (strchr(buffer, '\n'))
+			break ;
+	}
+	free(read_content);
+	return (buffer);
 }
 
 char	*get_next_line(int fd)
 {
 	static char	*buffer;
-	char		*temp;
 	char		*line;
-	ssize_t		read_size;
 
+	buffer = rdff(fd, buffer);
 	if (!buffer)
-	{
-		read_size = 0;
-		while (is_newline_in_str(buffer) == -1)
-		{
-			buffer = (char *)calloc(BUFFER_SIZE, sizeof(char));
-			read_size += read(fd, buffer, BUFFER_SIZE);
-			if (read_size < 0)
-				return (NULL);
-			temp = concat(temp, buffer);
-			free(buffer);
-		}
-		line = get_line_from_temp(temp);
-		store_temp_in_buffer(temp, buffer);
-		return (line);
-	}
-	return (NULL);
+		return (NULL);
+	line = get_line_from_buffer(buffer);
+	buffer = prepare_for_next(buffer);
+	return (line);
 }

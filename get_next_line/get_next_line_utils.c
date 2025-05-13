@@ -11,47 +11,85 @@
 /* ************************************************************************** */
 
 #include "get_next_line.h"
+#include <stdio.h>
 
-size_t	str_len(const char *s)
+static void	ft_bzero(void *s, size_t n)
 {
-	size_t i;
+	unsigned char	*ptr;
+	size_t			index;
 
-	i = 0;
-	while (s && s[i])
-		i++;
-	return (i);
+	ptr = (unsigned char *)s;
+	index = 0;
+	while (index < n)
+	{
+		ptr[index] = 0;
+		index++;
+	}
 }
 
-char	*joinfree(char *temp, const char *buff)
+size_t	ft_strlen(const char *s)
 {
-	size_t			temp_len;
-	size_t			buff_len;
-	char	*str;
+	size_t	size;
 
-	temp_len = str_len(temp);
-	buff_len = str_len(buff);
-	str  = (char *)malloc((temp_len + str_len(buff) + 1) * sizeof(char)); 
-	if (!str)
-		return NULL;
-	if (temp)
-		memcpy(str, temp, temp_len);
-	if (buff)
-		memcpy(str + temp_len, buff, buff_len);
-	str[temp_len + buff_len] = '\0';
-	free(temp);
-	return (str);
+	size = 0;
+	while (s && s[size])
+		size++;
+	return (size);
 }
 
-ssize_t	find_newline(const char *s)
+size_t	ft_strlcat(char *dst, const char *src, size_t size)
 {
 	size_t	i;
+	size_t	dst_len;
+	size_t	src_len;
 
 	i = 0;
-	while (s && s[i])
+	dst_len = ft_strlen(dst);
+	src_len = ft_strlen(src);
+	if (size < dst_len)
+		return (size + src_len);
+	if (src_len != 0)
 	{
-		if (s[i] == '\n')
-			return (i + 1);
-		i++;
+		while (src[i] != 0 && dst_len + i + 1 < size)
+		{
+			dst[dst_len + i] = src[i];
+			i++;
+		}
 	}
-	return (-1);
+	dst[dst_len + i] = 0;
+	return (dst_len + src_len);
+}
+
+void	*ft_calloc(size_t nmemb, size_t size)
+{
+	void	*array;
+	size_t	total_size;
+
+	if (nmemb != 0 && size != 0)
+	{
+		total_size = nmemb * size;
+		if (nmemb != total_size / size)
+			return (NULL);
+	}
+	else
+		return (malloc(0));
+	array = malloc(total_size);
+	if (!array)
+		return (NULL);
+	ft_bzero(array, total_size);
+	return (array);
+}
+
+char	*ft_strjoin(char *s1, char *s2)
+{
+	char	*new;
+	size_t	size;
+
+	size = (ft_strlen(s1) + ft_strlen(s2) + 1) * sizeof(char);
+	new = ft_calloc(size, sizeof(char));
+	if (!new)
+		return (NULL);
+	ft_strlcat(new, s1, size);
+	ft_strlcat(new + ft_strlen(s1), s2, size);
+	return (new);
 }

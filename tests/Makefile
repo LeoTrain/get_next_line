@@ -1,8 +1,8 @@
 CC = cc
 FLAGS = -Wall -Wextra -Werror
 STATIC = -D BUFFER_SIZE=$(BUFFER_SIZE)
-SRCS = main.c get_next_line/get_next_line.c get_next_line/get_next_line_utils.c get_next_line/get_next_line.h
-FILE_PATH = files/
+SRCS = main.c ../get_next_line/get_next_line.c ../get_next_line/get_next_line_utils.c
+FILE_PATH = ../files/
 NAME = prog
 BUFFER_SIZE ?= 100
 FILE ?= file1
