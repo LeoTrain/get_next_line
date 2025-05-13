@@ -13,11 +13,27 @@
 #include "get_next_line.h"
 #include <stdio.h>
 
-char	*free_buffer(char *buffer, char *read_content)
+char	*free_buffer(char *buffer, char *read_content, ssize_t read_size)
 {
 	char	*temp;
+	size_t	i;
+	size_t	j;
 
-	temp = ft_strjoin(buffer, read_content);
+	j = 0;
+	i = 0;
+	temp = (char *)ft_calloc(ft_strlen(buffer) + read_size + 1, sizeof(char));
+	if (!temp)
+		return (NULL);
+	while (buffer[i])
+	{
+		temp[i] = buffer[i];
+		i++;
+	}
+	while (j < (size_t)read_size)
+	{
+		temp[i + j] = read_content[j];
+		j++;
+	}
 	free(buffer);
 	return (temp);
 }
@@ -37,7 +53,7 @@ char	*prepare_for_next(char *buffer)
 		free(buffer);
 		return (NULL);
 	}
-	new_buffer = (char *)ft_calloc((strlen(buffer) - i + 1), sizeof(char));
+	new_buffer = (char *)ft_calloc((strlen(buffer) - i), sizeof(char));
 	if (!new_buffer)
 		return (NULL);
 	i++;
@@ -50,6 +66,7 @@ char	*prepare_for_next(char *buffer)
 char	*get_line_from_buffer(char *buffer)
 {
 	size_t	i;
+	size_t	j;
 	char	*line;
 
 	i = 0;
@@ -58,15 +75,14 @@ char	*get_line_from_buffer(char *buffer)
 	line = (char *)ft_calloc(i + 2, sizeof(char));
 	if (!line)
 		return (NULL);
-	i = 0;
-	while (buffer[i] && buffer[i] != '\n')
+	j = 0;
+	while (j < i)
 	{
-		line[i] = buffer[i];
-		i++;
+		line[j] = buffer[j];
+		j++;
 	}
-	if (buffer[i] && buffer[i] == '\n')
+	if (buffer[i] == '\n')
 		line[i] = '\n';
-	i++;
 	return (line);
 }
 
@@ -81,15 +97,23 @@ char	*rdff(int fd, char *buffer)
 	read_content = (char *)ft_calloc(BUFFER_SIZE + 1, sizeof(char));
 	if (!read_content)
 		return (NULL);
+	int i = 0;
 	while (read_size > 0)
 	{
 		read_size = read(fd, read_content, BUFFER_SIZE);
-		if (read_size == 0)
+		// printf("\naaaaa while -> %d - %zu\n", i, read_size);
+		i++;
+		if (read_size <= 0)
 		{
 			free(read_content);
-			return (NULL);
+			if (buffer[0] == '\0')
+			{
+				free(buffer);
+				return (NULL);
+			}
+			return (buffer);
 		}
-		buffer = free_buffer(buffer, read_content);
+		buffer = free_buffer(buffer, read_content, read_size);
 		if (strchr(buffer, '\n'))
 			break ;
 	}
@@ -102,8 +126,12 @@ char	*get_next_line(int fd)
 	static char	*buffer;
 	char		*line;
 
+	if (fd < 0 || BUFFER_SIZE < 0 || read(fd, 0, 0) < 0)
+		return (NULL);
+	// printf("BUFFER BEFORE %s\n", buffer);
 	buffer = rdff(fd, buffer);
-	if (!buffer)
+	// printf("BUFFER AFTER %s\n", buffer);
+	if (buffer == NULL)
 		return (NULL);
 	line = get_line_from_buffer(buffer);
 	buffer = prepare_for_next(buffer);
