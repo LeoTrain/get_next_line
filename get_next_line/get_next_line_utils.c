@@ -37,29 +37,6 @@ size_t	ft_strlen(const char *s)
 	return (size);
 }
 
-size_t	ft_strlcat(char *dst, const char *src, size_t size)
-{
-	size_t	i;
-	size_t	dst_len;
-	size_t	src_len;
-
-	i = 0;
-	dst_len = ft_strlen(dst);
-	src_len = ft_strlen(src);
-	if (size < dst_len)
-		return (size + src_len);
-	if (src_len != 0)
-	{
-		while (src[i] != 0 && dst_len + i + 1 < size)
-		{
-			dst[dst_len + i] = src[i];
-			i++;
-		}
-	}
-	dst[dst_len + i] = 0;
-	return (dst_len + src_len);
-}
-
 void	*ft_calloc(size_t nmemb, size_t size)
 {
 	void	*array;
@@ -79,29 +56,15 @@ void	*ft_calloc(size_t nmemb, size_t size)
 	return (array);
 }
 
-char	*ft_strjoin(char *s1, char *s2)
+char	*ft_strchr(const char *s, int c)
 {
-	char	*new;
-	size_t	size;
-	int		i;
-	int		j;
-
-	size = ft_strlen(s1) + ft_strlen(s2);
-	i = 0;
-	new = (char *)ft_calloc((size + 1), sizeof(char));
-	if (!new || !s1 || !s2)
-		return (NULL);
-	while (s1[i] != 0)
+	while (*s)
 	{
-		new[i] = s1[i];
-		i++;
+		if (*s == (char)c)
+			return ((char *)s);
+		s++;
 	}
-	j = 0;
-	while (s2[j] != 0)
-	{
-		new[i] = s2[j];
-		j++;
-		i++;
-	}
-	return (new);
+	if ((char)c == 0)
+		return ((char *)s);
+	return (NULL);
 }

@@ -114,7 +114,7 @@ char	*rdff(int fd, char *buffer)
 			return (buffer);
 		}
 		buffer = free_buffer(buffer, read_content, read_size);
-		if (strchr(buffer, '\n'))
+		if (ft_strchr(buffer, '\n'))
 			break ;
 	}
 	free(read_content);
