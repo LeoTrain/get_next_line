@@ -2,6 +2,30 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <criterion/criterion.h>
+
+Test(gnl, gnl_t1)
+{
+	int		fd;
+	char	*line;
+	fd = open("tests/test1.txt", O_RDONLY);
+	line = get_next_line(fd);
+	cr_assert_str_eq(line, "Hello World\n");
+	free(line);
+	line = get_next_line(fd);
+	cr_assert_str_eq(line, "This is a test\n");
+	free(line);
+	line = get_next_line(fd);
+	cr_assert_str_eq(line, "This is a test\n");
+	free(line);
+	line = get_next_line(fd);
+	cr_assert_str_eq(line, "This is a test\n");
+	free(line);
+	line = get_next_line(fd);
+	cr_assert_str_eq(line, NULL);
+	free(line);
+	close(fd);
+}
 
 int main(int argc, char **argv)
 {
